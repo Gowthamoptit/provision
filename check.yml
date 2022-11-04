@@ -5,7 +5,7 @@
   vars:
    version: "4.10"
    rg_name: "sunbird-installation-test-{{ version }}"
-   region: ap-south-1
+   region: us-east-2
    vpc_name: "installation-test-{{ version }}"
    subnet_name: "installation-test-subnet-{{ version }}"
    security_group: sunbird-setup
