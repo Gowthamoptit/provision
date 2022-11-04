@@ -31,8 +31,8 @@
      - contents
      - public
   tasks:
-   - name: creating ec2 group
-     ec2_group:
+    - name: creating ec2 group
+      ec2_group:
         name: "{{ security_group }}"
         region: "{{ region }}"
         vpc: "{{vpc_name}}"
