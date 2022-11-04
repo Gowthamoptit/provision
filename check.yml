@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+   version: "4.10"
+   rg_name: "sunbird-installation-test-{{ version }}"
+   region: ap-south-1
+   vpc_name: "installation-test-{{ version }}"
+   subnet_name: "installation-test-subnet-{{ version }}"
+   security_group: sunbird-setup
+   vm_names:
+     - jenkins
+     - kp
+     - dp
+     - yarn
+     - db
+     - others
+   instance_type: t2.xlarge
+    # To get correct verions, run
+    # az aks get-versions -l centralindia -o table
+   eks_version: 1.23
+   private_containers:
+     - private
+     - artifacts
+     - management
+     - results
+     - backups
+     - label
+   public_containers:
+     - contents
+     - public
+  tasks:
+    - name: Creating resource group - "{{ rg_name }}"
+      ec2_group:
+        name: "{{ rg_name }}"
+        location: "{{ location }}"
+      register: rg
+    - debug:
+        var: rg
