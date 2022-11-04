@@ -31,10 +31,14 @@
      - contents
      - public
   tasks:
-    - name: Creating resource group - "{{ rg_name }}"
-      ec2_group:
-        name: "{{ rg_name }}"
-        location: "{{ location }}"
-      register: rg
-    - debug:
-        var: rg
+   - name: creating ec2 group
+     ec2_group:
+        name: "{{ security_group }}"
+        region: "{{ region }}"
+        vpc: "{{vpc_name}}"
+      rules:
+       - proto: tcp
+         ports:
+         - 80
+         cidr_ip: 0.0.0.0/0
+      register: security group
