@@ -31,14 +31,21 @@
      - contents
      - public
   tasks:
-    - name: creating ec2 group
-      ec2_group:
-        name: "{{ security_group }}"
-        region: "{{ region }}"
-        vpc: "{{vpc_name}}"
-      rules:
-       - proto: tcp
-         ports:
-         - 80
-         cidr_ip: 0.0.0.0/0
-      register: security group
+    - name: Creating public ip for jenkins
+      community.aws.ec2_eip:
+        resource_group: "{{ rg_name }}"
+        name: jenkins-ip
+        allocation_method: static
+      register: public_ip
+      tags:
+        - network
+        - info
+    - name: Creating Nics
+      amazon.aws.ec2_eni:
+        name: "{{ item }}"
+        resource_group: "{{ rg_name }}"
+        vpc: "{{ vpc_name }}"
+        subnet_name: "{{ subnet_name }}"  #state: present
+      with_items: "{{ vm_names }}"
+      tags:
+        - network
