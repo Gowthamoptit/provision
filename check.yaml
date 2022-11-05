@@ -33,30 +33,12 @@
      - contents
      - public
   tasks:
-    - name: Create a managed Elastic Kubernetes Services (EKS) cluster
-      aws_eks_cluster:
-        name: "{{ vpc_name }}"
-        region: "{{ region }}"
-        version: "{{ eks_version }}"
-        role_arn: "{{ eks_role }"
-        subnet: "{{ subnet_name }}"
-        linux_profile:
-          user: "deployer" 
-          ssh_key: "{{  lookup('file', ssh_public_key_file_location)  }}"
-        service_principal:
-          aws_access_key: "{{ aws_access_key }}"   
-          aws_secret_key: "{{ aws_secret_key }}"
-        network_profile:
-          network_plugin: kubenet
-          pod_cidr: 192.168.0.0/16
-          docker_bridge_cidr: 172.17.0.1/16
-          dns_service_ip: 10.233.0.10
-          service_cidr: 10.233.0.0/16
-        agent_pool_profiles:
-          - name: default
-            count: 4
-            instance_type: t2.micro
-            type: VirtualMachineScaleSets
-            vpc_subnet_id: "{{ subnet_name }}"
-        tags:
-          Environment: installation
+    - name: Create private bucket
+      s3_bucket:
+         name: "{{ item }}"
+         permission: private
+      with_items: "{{ private_containers }}"
+    - name: Create public containers #bucket
+      s3_bucket:
+         container: "{{ item }}"
+         acl: public-read
