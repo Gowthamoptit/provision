@@ -31,21 +31,29 @@
      - contents
      - public
   tasks:
-    - name: Creating public ip for jenkins
-      community.aws.ec2_eip:
-        resource_group: "{{ rg_name }}"
-        name: jenkins-ip
-        allocation_method: static
-      register: public_ip
-      tags:
-        - network
-        - info
-    - name: Creating Nics
-      amazon.aws.ec2_eni:
+    - name: Creating vm {{ name }}
+      ec2_instance: #or ec2:
+        resource_group: "{{ rg_name }}" 
         name: "{{ item }}"
-        resource_group: "{{ rg_name }}"
-        vpc: "{{ vpc_name }}"
-        subnet_name: "{{ subnet_name }}"  #state: present
+        instance_type: "{{ instance_type }}"
+        region: "{{ region }}"
+        user: deployer  ##
+        ssh_password_enabled: false
+        assign_public_ip: no ##
+        volume_type: gp2 #(or) io1
+        volume_size: 250
+        network_interfaces: "{{ item }}"
+        state: present
+        allocated: "{{ allocate | d(true) }}"
+        group: "{{ security_group }}"
+        ssh_public_keys:
+          - path: /home/deployer/.ssh/authorized_keys
+            key_data: "{{ lookup('file', ssh_public_key_file_location) }}"
+        image:
+          offer: UbuntuServer
+          publisher: Canonical
+          sku: '18.04-LTS'
+          version: latest
       with_items: "{{ vm_names }}"
       tags:
-        - network
+        - vm
