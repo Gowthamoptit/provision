@@ -37,8 +37,11 @@
       s3_bucket:
          name: "{{ item }}"
          permission: private
+         region: "{{ region }}"
       with_items: "{{ private_containers }}"
     - name: Create public containers #bucket
       s3_bucket:
          container: "{{ item }}"
          acl: public-read
+         region: "{{ region }}"
+      with_items: "{{ public_containers }}"
