@@ -31,29 +31,30 @@
      - contents
      - public
   tasks:
-    - name: Creating vm {{ name }}
-      ec2_instance: #or ec2:
-        resource_group: "{{ rg_name }}" 
-        name: "{{ item }}"
-        instance_type: "{{ instance_type }}"
+    - name: Create a managed Elastic Kubernetes Services (EKS) cluster
+      aws_eks_cluster:
+        name: "{{ vpc_name }}"
         region: "{{ region }}"
-        user: deployer  ##
-        ssh_password_enabled: false
-        assign_public_ip: no ##
-        volume_type: gp2 #(or) io1
-        volume_size: 250
-        network_interfaces: "{{ item }}"
-        state: present
-        allocated: "{{ allocate | d(true) }}"
-        group: "{{ security_group }}"
-        ssh_public_keys:
-          - path: /home/deployer/.ssh/authorized_keys
-            key_data: "{{ lookup('file', ssh_public_key_file_location) }}"
-        image:
-          offer: UbuntuServer
-          publisher: Canonical
-          sku: '18.04-LTS'
-          version: latest
-      with_items: "{{ vm_names }}"
-      tags:
-        - vm
+        version: "{{ eks_version }}"
+        role_arn: "{{ eks_role }"
+        subnet: "{{ subnet_name }}"
+        linux_profile:
+          user: "deployer" 
+          ssh_key: "{{  lookup('file', ssh_public_key_file_location)  }}"
+        service_principal:
+          aws_access_key: "{{ aws_access_key }}"   
+          aws_secret_key: "{{ aws_secret_key }}"
+        network_profile:
+          network_plugin: kubenet
+          pod_cidr: 192.168.0.0/16
+          docker_bridge_cidr: 172.17.0.1/16
+          dns_service_ip: 10.233.0.10
+          service_cidr: 10.233.0.0/16
+        agent_pool_profiles:
+          - name: default
+            count: 4
+            instance_type: t2.micro
+            type: VirtualMachineScaleSets
+            vpc_subnet_id: "{{ subnet.state.id }}"
+        tags:
+          Environment: installation
