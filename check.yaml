@@ -4,7 +4,7 @@
   gather_facts: false
   vars:
    version: "4.10"
-   rg_name: "sunbird-installation-test-{{ version }}"
+   storage_account_name: "sunbird-installation-test-{{ version }}"
    region: us-east-2
    vpc_name: "installation-test-{{ version }}"
    subnet_name: "installation-test-subnet-{{ version }}"
@@ -33,11 +33,8 @@
      - contents
      - public
   tasks:
-    - name: Creating containier registry
-      ecs_ecr:
-        name: "{{ vpc_name }}"
-        region: "{{ region }}"
-        admin_user_enabled: true
-        state: present
-        tags:
-          Environment: installation
+    - name: Get instance of Registry
+      ecs_ecr_info:
+        retrieve_credentials: true
+        name: "{{ storage_account_name }}"
+      register: registry
