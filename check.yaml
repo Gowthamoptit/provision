@@ -33,20 +33,11 @@
      - contents
      - public
   tasks:
-    - name: Creating a dummy folder for creation
-      file:
-        path: /tmp/dummy.txt
-        state: touch
-    - name: Creating folder structure in blob
-      aws_s3:
-        bucket: contents
-        object: "{{ item }}/dummy.txt"
-        src: /tmp/dummy.txt
-        mode: put or copy
-        content_type: 'text/plain'
-      with_items:
-        - collection-editor
-        - generic-editor
-        - content-editor
-        - v3/preview
-        - terms-and-conditions
+    - name: Creating containier registry
+      ecs_ecr:
+        name: "{{ vpc_name }}"
+        region: "{{ region }}"
+        admin_user_enabled: true
+        state: present
+        tags:
+          Environment: installation
