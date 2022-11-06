@@ -33,8 +33,11 @@
      - contents
      - public
   tasks:
-     - name: Get instance ips
-       ec2_eni_info:
-         name: "{{ item }}"
-       with_items: "{{vm_names}}"
-       register: nics
+     - name: Showing resources info
+        debug:
+          msg:
+            - Jenkins public ip: "{{ public_ip.state.ip_address }}"
+            - ECR password: "{{ registry.registries[0].credentials.password }}"
+            - ECR registry server: "{{ registry.registries[0].login_server }}"
+            - ECR username: "{{ registry.registries[0].name }}"
+            - S3 bucket list: "{{ result['buckets'] }}"
