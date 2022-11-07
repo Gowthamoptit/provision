@@ -33,7 +33,11 @@
      - contents
      - public
   tasks:
-     - name: Get ECR token
-       shell: "{{ item }}"
-       with_items:
-        - $(aws ecr get-login --no-include-email --region us-east-2) 
+     - name: Get instance profile info
+      aws_caller_info:
+      register: aws_caller_info
+    - set_fact:
+        ecr_registry_url: "{{ aws_info.account }}.dkr.ecr.us-east-2.amazonaws.com"
+    - name: Get ECR token 
+      shell: "aws ecr get-login-password --region us-east-2"
+      register: registry or ecr_token
