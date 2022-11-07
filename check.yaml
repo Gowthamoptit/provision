@@ -33,7 +33,7 @@
      - contents
      - public
   tasks:
-     - name: Get instance profile info
+    - name: Get instance profile info
       aws_caller_info:
       register: aws_caller_info
     - set_fact:
